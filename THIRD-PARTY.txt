@@ -1,0 +1,18 @@
+﻿Nomi embarque les composants suivants, installés avec l'application et utilisés hors ligne.
+
+llama.cpp (moteur d'inférence, dossier engine\)
+  https://github.com/ggml-org/llama.cpp
+  Licence MIT, voir LICENSE-llama.cpp.txt
+
+LLVM OpenMP runtime (libomp.dll, utilisé par llama.cpp)
+  Licence Apache 2.0 avec exceptions LLVM, voir LICENSE-LLVM-OpenMP.txt
+
+Qwen3-4B-Instruct-2507, quantification GGUF UD-IQ3_XXS par Unsloth (dossier models\)
+  https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507
+  https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF
+  Licence Apache 2.0, voir LICENSE-Qwen3.txt
+
+Microsoft Visual C++ Runtime (msvcp140.dll, vcruntime140.dll, vcruntime140_1.dll)
+  Fichiers redistribuables Microsoft, déployés localement à côté du moteur.
+
+Mascotte « Petit explorateur » : dessin fourni pour le projet Nomi.

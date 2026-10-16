@@ -1,0 +1,180 @@
+﻿<Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="Shell" Background="{DynamicResource BgBrush}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+        CornerRadius="{DynamicResource PanelRadius}" TextElement.FontFamily="{StaticResource UiFont}"
+        TextElement.FontSize="{DynamicResource BaseFontSize}" TextElement.Foreground="{DynamicResource TextBrush}">
+  <Grid>
+    <Grid Margin="18,12,18,14">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*" MinHeight="70"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+
+      <!-- Header: also the handle to move the panel -->
+      <Grid x:Name="Header" Background="Transparent" Cursor="SizeAll" Margin="0,0,0,10">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Ellipse x:Name="EngineDot" Width="8" Height="8" Fill="{DynamicResource MutedBrush}" VerticalAlignment="Center" Margin="0,2,10,0"/>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+          <TextBlock Text="Nomi" FontFamily="{StaticResource DisplayFont}" FontSize="{DynamicResource TitleFontSize}" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"/>
+          <TextBlock x:Name="EngineText" Style="{StaticResource Muted}" Margin="10,3,0,0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center"/>
+        </StackPanel>
+        <Button x:Name="ReattachButton" Grid.Column="2" Style="{StaticResource Ghost}" Content="Rattacher" ToolTip="Replacer le panneau à côté de Nomi" Visibility="Collapsed"/>
+        <Button x:Name="CloseButton" Grid.Column="3" Style="{StaticResource Ghost}" ToolTip="Fermer (Échap)" Padding="8,2">
+          <Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" Width="10" Height="10"/>
+        </Button>
+      </Grid>
+
+      <!-- Modes -->
+      <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+        <RadioButton x:Name="TabReply" Style="{StaticResource Segment}" GroupName="mode" Content="Répondre" IsChecked="True"/>
+        <RadioButton x:Name="TabSuggestions" Style="{StaticResource Segment}" GroupName="mode" Content="Suggestions"/>
+        <RadioButton x:Name="TabAsk" Style="{StaticResource Segment}" GroupName="mode" Content="Question"/>
+      </StackPanel>
+
+      <!-- Mode-specific area -->
+      <Grid Grid.Row="2">
+        <!-- Reply -->
+        <StackPanel x:Name="ReplyArea">
+          <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <Border x:Name="TargetBar" Background="{DynamicResource AccentBrush}" CornerRadius="2" Margin="0,2"/>
+              <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                <TextBlock x:Name="TargetKind" Style="{StaticResource Label}" Text="MAIL CIBLÉ" Margin="0,0,0,2"/>
+                <TextBlock x:Name="TargetTitle" Style="{StaticResource Text}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxHeight="40"/>
+                <TextBlock x:Name="TargetDetail" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis" MaxHeight="58" Margin="0,2,0,0"/>
+              </StackPanel>
+            </Grid>
+          </Border>
+          <Grid Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="8"/>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="UseSelectionButton" Style="{StaticResource Btn}" Content="Mail sélectionné" ToolTip="Reprendre le mail sélectionné dans Outlook"/>
+            <Button x:Name="ZoneButton" Grid.Column="2" Style="{StaticResource Btn}" Content="Zone de l'écran…" ToolTip="Surligner à la souris le passage auquel répondre (Ctrl+Alt+R)"/>
+          </Grid>
+          <WrapPanel x:Name="Tones" Margin="0,0,0,8"/>
+          <Grid Margin="0,0,0,10">
+            <TextBox x:Name="Instruction" Style="{StaticResource Input}" MaxHeight="72" AcceptsReturn="False"/>
+            <TextBlock Style="{StaticResource Placeholder}" Text="Consigne facultative : accepter, proposer mardi, refuser poliment…">
+              <TextBlock.Visibility>
+                <Binding ElementName="Instruction" Path="Text.Length" Converter="{StaticResource ZeroToVisible}"/>
+              </TextBlock.Visibility>
+            </TextBlock>
+          </Grid>
+          <Button x:Name="GenerateButton" Style="{StaticResource Primary}" Content="Rédiger la réponse" Margin="0,0,0,12"/>
+        </StackPanel>
+
+        <!-- Suggestions -->
+        <Grid x:Name="SuggestionsArea" Visibility="Collapsed" Margin="0,0,0,12">
+          <StackPanel x:Name="SuggestionsOff" Visibility="Collapsed">
+            <TextBlock Style="{StaticResource Text}" Text="Les suggestions automatiques sont désactivées."/>
+            <TextBlock Style="{StaticResource Muted}" Margin="0,4,0,10"
+                       Text="Une fois activées, Nomi prépare en arrière-plan une réponse aux derniers mails reçus. Rien n'est envoyé sans vous."/>
+            <Button x:Name="EnableSuggestionsButton" Style="{StaticResource Primary}" Content="Activer les suggestions" HorizontalAlignment="Left"/>
+          </StackPanel>
+          <ListBox x:Name="SuggestionList" Background="Transparent" BorderThickness="0" MaxHeight="190"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" FocusVisualStyle="{x:Null}">
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="ListBoxItem">
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                      <Border x:Name="b" Background="Transparent" CornerRadius="{DynamicResource ControlRadius}" Padding="10,7" Margin="0,0,0,2"
+                              BorderThickness="1" BorderBrush="Transparent">
+                        <ContentPresenter/>
+                      </Border>
+                      <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                          <Setter TargetName="b" Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                          <Setter TargetName="b" Property="Background" Value="{DynamicResource AccentSoftBrush}"/>
+                          <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                        </Trigger>
+                      </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                  </Grid.ColumnDefinitions>
+                  <StackPanel>
+                    <TextBlock Text="{Binding Title}" Style="{StaticResource Text}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Preview}" Style="{StaticResource Muted}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                  </StackPanel>
+                  <TextBlock Grid.Column="1" Text="{Binding Status}" Style="{StaticResource Muted}" TextWrapping="NoWrap" Margin="10,0,0,0" VerticalAlignment="Top"/>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <TextBlock x:Name="SuggestionsEmpty" Style="{StaticResource Muted}" Visibility="Collapsed" Text="Aucun mail à traiter pour l'instant."/>
+        </Grid>
+
+        <!-- Free question -->
+        <StackPanel x:Name="AskArea" Visibility="Collapsed">
+          <Grid Margin="0,0,0,10">
+            <TextBox x:Name="Question" Style="{StaticResource Input}" MinHeight="60" MaxHeight="110" AcceptsReturn="True"/>
+            <TextBlock Style="{StaticResource Placeholder}" Text="Votre question (Ctrl+Entrée pour envoyer)">
+              <TextBlock.Visibility>
+                <Binding ElementName="Question" Path="Text.Length" Converter="{StaticResource ZeroToVisible}"/>
+              </TextBlock.Visibility>
+            </TextBlock>
+          </Grid>
+          <Button x:Name="AskButton" Style="{StaticResource Primary}" Content="Demander à Nomi" Margin="0,0,0,12"/>
+        </StackPanel>
+      </Grid>
+
+      <!-- Output, editable before it is used -->
+      <Grid Grid.Row="3">
+        <TextBox x:Name="Output" Style="{StaticResource Input}" AcceptsReturn="True" VerticalContentAlignment="Top"
+                 VerticalScrollBarVisibility="Auto" Padding="10,8"/>
+        <TextBlock x:Name="OutputHint" Style="{StaticResource Placeholder}" Margin="12,9,12,0"
+                   Text="La réponse s'écrira ici. Vous pourrez la modifier avant de l'utiliser."/>
+      </Grid>
+
+      <!-- Footer -->
+      <Grid Grid.Row="4" Margin="0,12,0,0">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <WrapPanel>
+          <Button x:Name="InsertButton" Style="{StaticResource Primary}" Content="Ouvrir dans Outlook" Margin="0,0,8,6" ToolTip="Ouvre une réponse à ce mail dans Outlook, avec ce texte au-dessus de votre signature"/>
+          <Button x:Name="CopyButton" Style="{StaticResource Btn}" Content="Copier" Margin="0,0,8,6"/>
+          <Button x:Name="RegenerateButton" Style="{StaticResource Btn}" Content="Autre version" Margin="0,0,8,6"/>
+          <Button x:Name="StopButton" Style="{StaticResource Btn}" Content="Arrêter" Margin="0,0,8,6" Visibility="Collapsed"/>
+        </WrapPanel>
+        <TextBlock x:Name="StatusText" Grid.Row="1" Style="{StaticResource Muted}" Margin="0,2,22,0"/>
+      </Grid>
+    </Grid>
+
+    <!-- Resize handle -->
+    <Border x:Name="Grip" Width="18" Height="18" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,4,4"
+            Background="Transparent" Cursor="SizeNWSE" ToolTip="Redimensionner">
+      <Path Data="M 14,3 L 3,14 M 14,8 L 8,14 M 14,13 L 13,14" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.4"
+            StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+    </Border>
+  </Grid>
+</Border>

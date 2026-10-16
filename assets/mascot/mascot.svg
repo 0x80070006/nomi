@@ -1,0 +1,72 @@
+<svg id="robot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="robotTitle robotDesc">
+  <title id="robotTitle">Petit explorateur</title>
+  <desc id="robotDesc">Tête de robot crème, visage bleu nuit et détails orange, animée selon l'état de l'agent.</desc>
+  <defs>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="5" stdDeviation="3" flood-color="#182638" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <g id="floatRig">
+    <g id="antennaRig">
+      <path d="M120 51 Q119 39 124 29" fill="none" stroke="#344252" stroke-width="8" stroke-linecap="round"/>
+      <path d="M120 51 Q119 39 124 29" fill="none" stroke="#697582" stroke-width="3" stroke-linecap="round"/>
+      <circle id="antenna" cx="126" cy="23" r="11" fill="#F5A623" stroke="#263342" stroke-width="4"/>
+      <path d="M122 19 Q126 15 130 20" fill="none" stroke="#FFD17A" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <g id="leftSensor">
+      <ellipse cx="38" cy="128" rx="17" ry="28" fill="#D5C9B8" stroke="#263342" stroke-width="5"/>
+      <ellipse cx="38" cy="128" rx="9" ry="19" fill="#F5A623" stroke="#263342" stroke-width="3"/>
+      <circle cx="38" cy="128" r="4" fill="#FFE0A0"/>
+    </g>
+    <g id="rightSensor">
+      <ellipse cx="202" cy="128" rx="17" ry="28" fill="#D5C9B8" stroke="#263342" stroke-width="5"/>
+      <ellipse cx="202" cy="128" rx="9" ry="19" fill="#F5A623" stroke="#263342" stroke-width="3"/>
+      <circle cx="202" cy="128" r="4" fill="#FFE0A0"/>
+    </g>
+    <g id="head" filter="url(#softShadow)">
+      <path d="M48 92 Q52 58 91 58 L149 58 Q188 61 192 94 L198 145 Q195 180 162 188 L78 188 Q45 181 42 149 Z"
+            fill="#E8DED0" stroke="#263342" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M59 89 Q65 69 94 68 L147 68 Q174 70 181 94" fill="none" stroke="#F8F1E8" stroke-width="7" stroke-linecap="round"/>
+      <path d="M55 160 Q62 177 82 179" fill="none" stroke="#C9BDAE" stroke-width="4" stroke-linecap="round"/>
+      <path d="M69 77 l-7 6 M172 169 l-6 5" stroke="#B6AA9B" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="61" cy="104" r="3.2" fill="#59616A"/>
+      <circle cx="179" cy="104" r="3.2" fill="#59616A"/>
+      <rect id="faceScreen" x="57" y="83" width="126" height="82" rx="31" fill="#263342" stroke="#1C2836" stroke-width="4"/>
+      <g id="brows" fill="none" stroke="#F5A623" stroke-width="5" stroke-linecap="round">
+        <path id="browL" d="M80 104 Q92 96 104 102"/>
+        <path id="browR" d="M136 102 Q148 96 160 104"/>
+      </g>
+      <g id="eyes" fill="#F5A623">
+        <ellipse id="eyeL" cx="93" cy="124" rx="10" ry="15"/>
+        <ellipse id="eyeR" cx="147" cy="124" rx="10" ry="15"/>
+        <path id="lidL" d="M81 121 Q93 108 105 121 L105 113 Q93 105 81 113Z" fill="#263342" opacity="0"/>
+        <path id="lidR" d="M135 121 Q147 108 159 121 L159 113 Q147 105 135 113Z" fill="#263342" opacity="0"/>
+      </g>
+      <g id="cheeks" fill="#E98969" opacity="0">
+        <ellipse cx="72" cy="143" rx="9" ry="5"/>
+        <ellipse cx="168" cy="143" rx="9" ry="5"/>
+      </g>
+      <g id="mouth" fill="none" stroke="#F5A623" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path id="mouthShape" d="M113 143 Q120 149 127 143"/>
+      </g>
+      <g id="detailScrew">
+        <circle cx="57" cy="166" r="4.2" fill="#B5A797" stroke="#263342" stroke-width="2"/>
+        <path d="M55 166 h4" stroke="#263342" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+    </g>
+    <g id="sweat" opacity="0">
+      <path d="M183 88 C183 88 174 100 174 105 A9 9 0 0 0 192 105 C192 100 183 88 183 88Z" fill="#8EC9C9" stroke="#263342" stroke-width="2.5"/>
+    </g>
+    <g id="sleepBubble" opacity="0">
+      <circle cx="188" cy="80" r="5" fill="#D8E8E6" stroke="#263342" stroke-width="2"/>
+      <circle cx="199" cy="68" r="3" fill="#D8E8E6" stroke="#263342" stroke-width="1.5"/>
+    </g>
+    <g id="looseScrew" opacity="0">
+      <circle cx="211" cy="178" r="5" fill="#B5A797" stroke="#263342" stroke-width="2"/>
+      <path d="M208 178 h6" stroke="#263342" stroke-width="1.5"/>
+    </g>
+    <g id="edgePeek" opacity="0">
+      <path d="M166 78 Q188 81 193 104 L197 145 Q190 166 168 169 L180 130Z" fill="#E8DED0" stroke="#263342" stroke-width="4"/>
+    </g>
+  </g>
+</svg>

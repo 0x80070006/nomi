@@ -1,0 +1,74 @@
+{
+  "default": "idle",
+  "states": {
+    "idle": {
+      "label": "Repos",
+      "kind": "loop",
+      "description": "Lévitation douce, regard dérivant et clignements irréguliers."
+    },
+    "listen": {
+      "label": "Écoute",
+      "kind": "loop",
+      "description": "Yeux agrandis, inclinaison attentive et antenne dressée."
+    },
+    "think": {
+      "label": "Réflexion",
+      "kind": "loop",
+      "description": "Yeux plissés asymétriques, tête inclinée et petits tics mécaniques."
+    },
+    "speak": {
+      "label": "Parle",
+      "kind": "loop",
+      "description": "Quatre formes de bouche et rebond léger au rythme des syllabes."
+    },
+    "success": {
+      "label": "Succès",
+      "kind": "oneshot",
+      "description": "Saut élastique, yeux heureux et joues colorées."
+    },
+    "error": {
+      "label": "Erreur / désolé",
+      "kind": "oneshot",
+      "description": "Affaissement, yeux tristes et petite secousse."
+    },
+    "surprise": {
+      "label": "Surprise",
+      "kind": "oneshot",
+      "description": "Sursaut bref puis retour au repos."
+    },
+    "sleep": {
+      "label": "Sommeil",
+      "kind": "loop",
+      "description": "Yeux fermés, tête basse et respiration lente."
+    },
+    "loading": {
+      "label": "Chargement",
+      "kind": "loop",
+      "description": "Regard qui suit un point imaginaire, petits rebonds et bouche en O."
+    },
+    "greeting": {
+      "label": "Salut",
+      "kind": "oneshot",
+      "description": "Apparition avec rebond, clignement et hochement de tête."
+    },
+    "drag": {
+      "label": "Déplacement",
+      "kind": "loop",
+      "description": "Expression inquiète et étirement selon le déplacement."
+    },
+    "edge": {
+      "label": "Bord d’écran",
+      "kind": "loop",
+      "description": "La tête se cache partiellement et jette un œil timide."
+    }
+  },
+  "transitions": {
+    "oneshotReturn": "idle",
+    "priority": [
+      "drag",
+      "surprise",
+      "error",
+      "success"
+    ]
+  }
+}

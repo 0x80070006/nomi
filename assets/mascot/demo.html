@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Petit explorateur — démo mascotte</title>
+<style>
+:root{color-scheme:dark;--ink:#e8edf4;--muted:#a9b7c8;--panel:#111f2e;--line:#2b4054;--accent:#f5a623}
+*{box-sizing:border-box}body{margin:0;background:#0b1420;color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;padding:24px}
+main{max-width:1100px;margin:auto}h1{font-size:clamp(1.5rem,3vw,2.2rem);margin:0 0 4px}p{color:var(--muted);margin-top:0}.layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:18px;margin-top:22px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}.buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.buttons button, .autoplay{background:#182b3d;color:var(--ink);border:1px solid #385168;border-radius:10px;padding:10px;cursor:pointer;font:inherit}.buttons button:hover,.buttons button:focus-visible,.autoplay:hover{border-color:var(--accent);outline:2px solid transparent}.buttons button[aria-pressed=true]{background:#3b2c17;border-color:var(--accent)}.preview{display:grid;place-items:center;min-height:300px;border-radius:12px;overflow:hidden;background-color:#d8dde4;background-image:linear-gradient(45deg,#b8c1cb 25%,transparent 25%),linear-gradient(-45deg,#b8c1cb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#b8c1cb 75%),linear-gradient(-45deg,transparent 75%,#b8c1cb 75%);background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0;}.preview svg{width:128px;height:128px;overflow:visible}.controls{display:flex;align-items:center;gap:10px;margin-top:15px;flex-wrap:wrap}.controls label{color:var(--muted)}input[type=range]{accent-color:var(--accent)}#status{font-weight:650;color:#ffd17a}.note{font-size:.9rem;margin-top:12px}.mini{width:100%;height:220px;display:block}.hide{display:none}
+@media(max-width:760px){body{padding:14px}.layout{grid-template-columns:1fr}.buttons{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* SVG motions: separate named parts remain addressable for host control. */
+#robot{--voice-level:0;--drag-x:0;--drag-y:0;transform-origin:center;overflow:visible}
+#floatRig{transform-box:fill-box;transform-origin:center;animation:float 3s ease-in-out infinite}
+#head{transform-box:fill-box;transform-origin:center;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+#antennaRig{transform-box:fill-box;transform-origin:50% 100%;animation:antennaIdle 2.7s ease-in-out infinite}
+#eyes,#brows,#mouth,#cheeks,#leftSensor,#rightSensor,#sweat,#sleepBubble,#looseScrew,#edgePeek{transition:transform .25s ease,opacity .2s ease}
+#mouthShape{transition:d .12s ease}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes antennaIdle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+@keyframes blink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.08)}}
+@keyframes listening{0%,100%{transform:rotate(-8deg) translateY(0)}50%{transform:rotate(-8deg) translateY(-2px)}}
+@keyframes thinking{0%,100%{transform:rotate(5deg)}45%{transform:rotate(2deg) translateY(-2px)}}
+@keyframes tick{0%,85%,100%{transform:rotate(0)}88%{transform:rotate(-4deg)}92%{transform:rotate(3deg)}}
+@keyframes talkBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes successJump{0%{transform:translateY(0) scale(1)}25%{transform:translateY(5px) scale(1.08,.88)}55%{transform:translateY(-20px) scale(.92,1.08)}78%{transform:translateY(2px) scale(1.03,.96)}100%{transform:translateY(0) scale(1)}}
+@keyframes errorDrop{0%,100%{transform:translateY(0) rotate(0)}35%{transform:translateY(8px) rotate(-4deg)}55%{transform:translateY(5px) rotate(3deg)}}
+@keyframes surprise{0%,100%{transform:translateY(0) scale(1)}20%{transform:translateY(8px) scale(1.08,.9)}45%{transform:translateY(-9px) scale(.96,1.06)}}
+@keyframes breathe{0%,100%{transform:translateY(5px) scale(1)}50%{transform:translateY(8px) scale(1.015,.99)}}
+@keyframes loadTap{0%,100%{transform:translateY(0)}30%{transform:translateY(3px) scale(1.02,.98)}}
+@keyframes popIn{0%{transform:translateY(35px) scale(.65);opacity:0}55%{transform:translateY(-8px) scale(1.08);opacity:1}78%{transform:translateY(3px) scale(.97)}100%{transform:translateY(0) scale(1)}}
+@keyframes dragStretch{0%,100%{transform:scaleX(1) scaleY(1)}50%{transform:scaleX(1.09) scaleY(.94)}}
+@keyframes peek{0%,100%{transform:translateX(42px)}50%{transform:translateX(34px)}}
+.state-idle #eyes{animation:blink 4.4s infinite}
+.state-listen #head{animation:listening 1.8s ease-in-out infinite}
+.state-listen #antennaRig{transform:translateY(-4px) rotate(7deg)}
+.state-listen #leftSensor,.state-listen #rightSensor{transform:scaleX(1.12)}
+.state-listen #eyes{transform:scale(1.13)}
+.state-listen #floatRig{animation:float 1.2s ease-in-out infinite}
+.state-think #head{animation:thinking 2.1s ease-in-out infinite}
+.state-think #browL{d:path("M80 108 Q92 105 104 110")}
+.state-think #browR{d:path("M136 100 Q148 88 160 97")}
+.state-think #eyeL{transform:scaleY(.62);transform-origin:93px 124px}
+.state-think #eyeR{transform:scale(.78);transform-origin:147px 124px}
+.state-think #antennaRig{animation:tick .9s ease-in-out infinite}
+.state-think #sweat{opacity:1;animation:tick 1s 10s infinite}
+.state-speak #floatRig{animation:talkBounce .42s ease-in-out infinite}
+.state-speak #mouthShape{animation:mouthTalk .7s steps(1,end) infinite}
+@keyframes mouthTalk{0%,100%{d:path("M113 143 Q120 149 127 143")}25%{d:path("M111 140 Q120 157 129 140")}50%{d:path("M116 141 Q120 137 124 141")}75%{d:path("M108 141 Q120 155 132 141")}}
+.state-success #floatRig{animation:successJump .85s cubic-bezier(.2,.8,.2,1) 1}
+.state-success #brows{transform:translateY(-5px)}
+.state-success #eyeL,.state-success #eyeR{transform:scaleY(.45);transform-origin:center}
+.state-success #cheeks{opacity:1}
+.state-success #antennaRig{animation:tick .35s ease-in-out 3}
+.state-error #floatRig{animation:errorDrop .7s ease-in-out 1}
+.state-error #eyeL{transform:rotate(45deg) scaleY(.7);transform-origin:93px 124px}
+.state-error #eyeR{transform:rotate(-45deg) scaleY(.7);transform-origin:147px 124px}
+.state-error #mouthShape{d:path("M111 149 Q120 137 129 149")}
+.state-error #antennaRig{transform:rotate(-28deg)}
+.state-error #looseScrew{opacity:1;animation:tick .3s 3}
+.state-surprise #floatRig{animation:surprise .7s cubic-bezier(.2,.8,.2,1) 1}
+.state-surprise #eyes{transform:scale(1.35)}
+.state-surprise #mouthShape{d:path("M114 141 A6 7 0 1 0 126 141 A6 7 0 1 0 114 141")}
+.state-surprise #antennaRig{animation:tick .25s 2}
+.state-sleep #floatRig{animation:breathe 3.5s ease-in-out infinite}
+.state-sleep #eyeL,.state-sleep #eyeR{transform:scaleY(.12);transform-origin:center}
+.state-sleep #antennaRig{transform:rotate(-42deg);transform-origin:120px 51px}
+.state-sleep #sleepBubble{opacity:1;animation:tick 2s ease-in-out infinite}
+.state-sleep #mouthShape{d:path("M114 144 Q120 148 126 144")}
+.state-loading #floatRig{animation:loadTap .8s ease-in-out infinite}
+.state-loading #eyes{transform:translateX(4px)}
+.state-loading #mouthShape{d:path("M115 142 A5 5 0 1 0 125 142 A5 5 0 1 0 115 142")}
+.state-loading #antennaRig{animation:tick .7s infinite}
+.state-greeting #floatRig{animation:popIn .9s cubic-bezier(.2,.8,.2,1) 1}
+.state-greeting #eyes{animation:blink .8s 1}
+.state-greeting #head{animation:tick .55s .7s 1}
+.state-drag #floatRig{animation:dragStretch .55s ease-in-out infinite;transform:scaleX(calc(1 + var(--drag-x)*.07)) scaleY(calc(1 + var(--drag-y)*.04))}
+.state-drag #eyes{transform:rotate(-12deg) scale(.9)}
+.state-drag #antennaRig{transform:rotate(18deg)}
+.state-edge #floatRig{animation:peek 1.8s ease-in-out infinite}
+.state-edge #eyes{transform:translateX(-4px) scale(.9)}
+.state-edge #rightSensor{opacity:.25}
+.reduced-motion *,#robot.reduced-motion *{animation:none!important;transition:none!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Petit explorateur</h1>
+  <p>Prototype de mascotte d’interface · SVG transparent · palette crème, bleu nuit et orange.</p>
+  <div class="layout">
+    <section class="panel" aria-labelledby="statesTitle">
+      <h2 id="statesTitle">12 états</h2>
+      <div class="buttons" id="stateButtons">
+        <button data-state="idle" aria-pressed="true">1 · Repos</button>
+        <button data-state="listen" aria-pressed="false">2 · Écoute</button>
+        <button data-state="think" aria-pressed="false">3 · Réflexion</button>
+        <button data-state="speak" aria-pressed="false">4 · Parle</button>
+        <button data-state="success" aria-pressed="false">5 · Succès</button>
+        <button data-state="error" aria-pressed="false">6 · Erreur</button>
+        <button data-state="surprise" aria-pressed="false">7 · Surprise</button>
+        <button data-state="sleep" aria-pressed="false">8 · Sommeil</button>
+        <button data-state="loading" aria-pressed="false">9 · Chargement</button>
+        <button data-state="greeting" aria-pressed="false">10 · Salut</button>
+        <button data-state="drag" aria-pressed="false">11 · Drag</button>
+        <button data-state="edge" aria-pressed="false">12 · Bord</button>
+      </div>
+      <div class="controls">
+        <button class="autoplay" id="auto" aria-pressed="false">▶ Enchaînement auto</button>
+        <button class="autoplay" id="stop">Arrêter</button>
+      </div>
+      <p class="note">Les animations ponctuelles reviennent au repos. Le mode auto parcourt les 12 états.</p>
+    </section>
+    <section class="panel" aria-labelledby="previewTitle">
+      <h2 id="previewTitle">Aperçu transparent</h2>
+      <div class="preview" id="preview">
+        <svg id="robot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="robotTitle robotDesc">
+  <title id="robotTitle">Petit explorateur</title>
+  <desc id="robotDesc">Tête de robot crème, visage bleu nuit et détails orange, animée selon l'état de l'agent.</desc>
+  <defs>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="5" stdDeviation="3" flood-color="#182638" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <g id="floatRig">
+    <g id="antennaRig">
+      <path d="M120 51 Q119 39 124 29" fill="none" stroke="#344252" stroke-width="8" stroke-linecap="round"/>
+      <path d="M120 51 Q119 39 124 29" fill="none" stroke="#697582" stroke-width="3" stroke-linecap="round"/>
+      <circle id="antenna" cx="126" cy="23" r="11" fill="#F5A623" stroke="#263342" stroke-width="4"/>
+      <path d="M122 19 Q126 15 130 20" fill="none" stroke="#FFD17A" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <g id="leftSensor">
+      <ellipse cx="38" cy="128" rx="17" ry="28" fill="#D5C9B8" stroke="#263342" stroke-width="5"/>
+      <ellipse cx="38" cy="128" rx="9" ry="19" fill="#F5A623" stroke="#263342" stroke-width="3"/>
+      <circle cx="38" cy="128" r="4" fill="#FFE0A0"/>
+    </g>
+    <g id="rightSensor">
+      <ellipse cx="202" cy="128" rx="17" ry="28" fill="#D5C9B8" stroke="#263342" stroke-width="5"/>
+      <ellipse cx="202" cy="128" rx="9" ry="19" fill="#F5A623" stroke="#263342" stroke-width="3"/>
+      <circle cx="202" cy="128" r="4" fill="#FFE0A0"/>
+    </g>
+    <g id="head" filter="url(#softShadow)">
+      <path d="M48 92 Q52 58 91 58 L149 58 Q188 61 192 94 L198 145 Q195 180 162 188 L78 188 Q45 181 42 149 Z"
+            fill="#E8DED0" stroke="#263342" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M59 89 Q65 69 94 68 L147 68 Q174 70 181 94" fill="none" stroke="#F8F1E8" stroke-width="7" stroke-linecap="round"/>
+      <path d="M55 160 Q62 177 82 179" fill="none" stroke="#C9BDAE" stroke-width="4" stroke-linecap="round"/>
+      <path d="M69 77 l-7 6 M172 169 l-6 5" stroke="#B6AA9B" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="61" cy="104" r="3.2" fill="#59616A"/>
+      <circle cx="179" cy="104" r="3.2" fill="#59616A"/>
+      <rect id="faceScreen" x="57" y="83" width="126" height="82" rx="31" fill="#263342" stroke="#1C2836" stroke-width="4"/>
+      <g id="brows" fill="none" stroke="#F5A623" stroke-width="5" stroke-linecap="round">
+        <path id="browL" d="M80 104 Q92 96 104 102"/>
+        <path id="browR" d="M136 102 Q148 96 160 104"/>
+      </g>
+      <g id="eyes" fill="#F5A623">
+        <ellipse id="eyeL" cx="93" cy="124" rx="10" ry="15"/>
+        <ellipse id="eyeR" cx="147" cy="124" rx="10" ry="15"/>
+        <path id="lidL" d="M81 121 Q93 108 105 121 L105 113 Q93 105 81 113Z" fill="#263342" opacity="0"/>
+        <path id="lidR" d="M135 121 Q147 108 159 121 L159 113 Q147 105 135 113Z" fill="#263342" opacity="0"/>
+      </g>
+      <g id="cheeks" fill="#E98969" opacity="0">
+        <ellipse cx="72" cy="143" rx="9" ry="5"/>
+        <ellipse cx="168" cy="143" rx="9" ry="5"/>
+      </g>
+      <g id="mouth" fill="none" stroke="#F5A623" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path id="mouthShape" d="M113 143 Q120 149 127 143"/>
+      </g>
+      <g id="detailScrew">
+        <circle cx="57" cy="166" r="4.2" fill="#B5A797" stroke="#263342" stroke-width="2"/>
+        <path d="M55 166 h4" stroke="#263342" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+    </g>
+    <g id="sweat" opacity="0">
+      <path d="M183 88 C183 88 174 100 174 105 A9 9 0 0 0 192 105 C192 100 183 88 183 88Z" fill="#8EC9C9" stroke="#263342" stroke-width="2.5"/>
+    </g>
+    <g id="sleepBubble" opacity="0">
+      <circle cx="188" cy="80" r="5" fill="#D8E8E6" stroke="#263342" stroke-width="2"/>
+      <circle cx="199" cy="68" r="3" fill="#D8E8E6" stroke="#263342" stroke-width="1.5"/>
+    </g>
+    <g id="looseScrew" opacity="0">
+      <circle cx="211" cy="178" r="5" fill="#B5A797" stroke="#263342" stroke-width="2"/>
+      <path d="M208 178 h6" stroke="#263342" stroke-width="1.5"/>
+    </g>
+    <g id="edgePeek" opacity="0">
+      <path d="M166 78 Q188 81 193 104 L197 145 Q190 166 168 169 L180 130Z" fill="#E8DED0" stroke="#263342" stroke-width="4"/>
+    </g>
+  </g>
+</svg>
+      </div>
+      <div class="controls">
+        <label for="size">Taille</label>
+        <input id="size" type="range" min="64" max="256" value="128" step="8">
+        <output id="sizeOut" for="size">128 px</output>
+      </div>
+      <p id="status" role="status" aria-live="polite">État : Repos</p>
+    </section>
+  </div>
+  <p class="note">Respecte <code>prefers-reduced-motion</code>. Les boutons sont utilisables au clavier. Le fond damier est uniquement un aperçu : le SVG conserve sa transparence.</p>
+</main>
+<script type="module">
+import { AgentMascot } from "./agent.js";
+const svg = document.querySelector("#robot");
+const mascot = new AgentMascot(svg);
+const labels = {idle:"Repos",listen:"Écoute",think:"Réflexion",speak:"Parle",success:"Succès",error:"Erreur / désolé",surprise:"Surprise",sleep:"Sommeil",loading:"Chargement",greeting:"Salut",drag:"Déplacement",edge:"Bord d’écran"};
+const buttons = [...document.querySelectorAll("[data-state]")];
+const status = document.querySelector("#status");
+let autoTimer = null, autoIndex = 0;
+function setState(state) {
+  mascot.setState(state);
+  buttons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.state === state)));
+  status.textContent = "État : " + labels[state];
+}
+buttons.forEach(b => b.addEventListener("click", () => { stopAuto(); setState(b.dataset.state); }));
+document.querySelector("#size").addEventListener("input", e => {
+  const n = Number(e.target.value);
+  svg.style.width = n + "px"; svg.style.height = n + "px";
+  document.querySelector("#sizeOut").value = n + " px";
+});
+function stopAuto() {
+  clearInterval(autoTimer); autoTimer = null;
+  document.querySelector("#auto").setAttribute("aria-pressed","false");
+}
+document.querySelector("#auto").addEventListener("click", () => {
+  if (autoTimer) { stopAuto(); return; }
+  autoIndex = 0; document.querySelector("#auto").setAttribute("aria-pressed","true");
+  const order = buttons.map(b => b.dataset.state);
+  setState(order[autoIndex++]);
+  autoTimer = setInterval(() => { setState(order[autoIndex++ % order.length]); }, 2200);
+});
+document.querySelector("#stop").addEventListener("click", () => { stopAuto(); setState("idle"); });
+</script>
+</body>
+</html>

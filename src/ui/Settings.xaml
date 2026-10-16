@@ -1,0 +1,327 @@
+<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="{DynamicResource BgBrush}" TextElement.FontFamily="{StaticResource UiFont}"
+      TextElement.FontSize="{DynamicResource BaseFontSize}" TextElement.Foreground="{DynamicResource TextBrush}">
+  <!--
+    Controls are bound to Settings fields through their Tag:
+      Slider / CheckBox / TextBox  Tag="Field"
+      RadioButton                  Tag="Field=value"
+      TextBlock                    Tag="value:Field"      (live value label)
+      WrapPanel                    Tag="colors:Field"     (color swatches, filled in code)
+  -->
+  <Grid.Resources>
+    <Style x:Key="Section" TargetType="TextBlock">
+      <Setter Property="FontFamily" Value="{StaticResource DisplayFont}"/>
+      <Setter Property="FontSize" Value="{DynamicResource TitleFontSize}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+      <Setter Property="Margin" Value="0,26,0,4"/>
+    </Style>
+    <Style x:Key="Note" TargetType="TextBlock" BasedOn="{StaticResource Muted}">
+      <Setter Property="Margin" Value="0,0,0,12"/>
+    </Style>
+    <Style x:Key="RowLabel" TargetType="TextBlock" BasedOn="{StaticResource Text}">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="0,0,16,0"/>
+    </Style>
+    <Style x:Key="Value" TargetType="TextBlock" BasedOn="{StaticResource Muted}">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Width" Value="84"/>
+      <Setter Property="TextAlignment" Value="Right"/>
+    </Style>
+    <Style TargetType="Grid" x:Key="Row">
+      <Setter Property="Margin" Value="0,7"/>
+    </Style>
+    <Style TargetType="Slider">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="IsMoveToPointEnabled" Value="True"/>
+      <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Slider">
+            <Grid Height="22" Background="Transparent">
+              <Border Height="4" CornerRadius="2" Background="{DynamicResource LineBrush}" VerticalAlignment="Center"/>
+              <Track x:Name="PART_Track">
+                <Track.DecreaseRepeatButton>
+                  <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
+                    <RepeatButton.Template>
+                      <ControlTemplate TargetType="RepeatButton">
+                        <Border Height="4" CornerRadius="2" Background="{DynamicResource AccentBrush}" VerticalAlignment="Center"/>
+                      </ControlTemplate>
+                    </RepeatButton.Template>
+                  </RepeatButton>
+                </Track.DecreaseRepeatButton>
+                <Track.IncreaseRepeatButton>
+                  <RepeatButton Command="Slider.IncreaseLarge" Focusable="False">
+                    <RepeatButton.Template>
+                      <ControlTemplate TargetType="RepeatButton">
+                        <Border Background="Transparent"/>
+                      </ControlTemplate>
+                    </RepeatButton.Template>
+                  </RepeatButton>
+                </Track.IncreaseRepeatButton>
+                <Track.Thumb>
+                  <Thumb>
+                    <Thumb.Template>
+                      <ControlTemplate TargetType="Thumb">
+                        <Ellipse Width="16" Height="16" Fill="{DynamicResource TextBrush}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="3"/>
+                      </ControlTemplate>
+                    </Thumb.Template>
+                  </Thumb>
+                </Track.Thumb>
+              </Track>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style TargetType="CheckBox">
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+      <Setter Property="Margin" Value="0,7"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="CheckBox">
+            <Grid Background="Transparent">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <Border x:Name="track" Width="36" Height="20" CornerRadius="10" Background="{DynamicResource LineBrush}" VerticalAlignment="Top" Margin="0,1,12,0">
+                <Ellipse x:Name="knob" Width="14" Height="14" Fill="{DynamicResource TextBrush}" HorizontalAlignment="Left" Margin="3,0"/>
+              </Border>
+              <ContentPresenter Grid.Column="1" VerticalAlignment="Center"/>
+            </Grid>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="track" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                <Setter TargetName="knob" Property="HorizontalAlignment" Value="Right"/>
+                <Setter TargetName="knob" Property="Fill" Value="{DynamicResource OnAccentBrush}"/>
+              </Trigger>
+              <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="track" Property="BorderBrush" Value="{DynamicResource TextBrush}"/>
+                <Setter TargetName="track" Property="BorderThickness" Value="1"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Grid.Resources>
+
+  <Grid.RowDefinitions>
+    <RowDefinition Height="*"/>
+    <RowDefinition Height="Auto"/>
+  </Grid.RowDefinitions>
+
+  <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,6,0">
+    <StackPanel Margin="32,8,32,24" MaxWidth="680">
+
+      <!-- ===================== Mascotte ===================== -->
+      <TextBlock Style="{StaticResource Section}" Text="Mascotte"/>
+      <TextBlock Style="{StaticResource Note}" Text="Faites-la glisser n'importe où. Coin inférieur droit ou Ctrl + molette pour la redimensionner. Relâchée contre un bord, elle s'y cache à moitié."/>
+      <CheckBox Tag="ShowMascot" Content="Afficher la mascotte"/>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Taille"/>
+        <Slider Grid.Column="1" Tag="MascotSize" Minimum="64" Maximum="320" SmallChange="4" LargeChange="16"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:MascotSize"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Opacité"/>
+        <Slider Grid.Column="1" Tag="MascotOpacity" Minimum="0.3" Maximum="1" SmallChange="0.05" LargeChange="0.1"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:MascotOpacity"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Mise en veille après"/>
+        <Slider Grid.Column="1" Tag="SleepMinutes" Minimum="0" Maximum="60" SmallChange="1" LargeChange="5" IsSnapToTickEnabled="True" TickFrequency="1"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:SleepMinutes"/>
+      </Grid>
+      <CheckBox Tag="AlwaysOnTop" Content="Toujours au premier plan"/>
+      <CheckBox Tag="Animations" Content="Animations (désactivées aussi quand Windows réduit les animations)"/>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Position"/>
+        <WrapPanel Grid.Column="1">
+          <Button x:Name="CornerBR" Style="{StaticResource Btn}" Content="Bas droite" Margin="0,0,6,6"/>
+          <Button x:Name="CornerBL" Style="{StaticResource Btn}" Content="Bas gauche" Margin="0,0,6,6"/>
+          <Button x:Name="CornerTR" Style="{StaticResource Btn}" Content="Haut droite" Margin="0,0,6,6"/>
+          <Button x:Name="CornerTL" Style="{StaticResource Btn}" Content="Haut gauche" Margin="0,0,6,6"/>
+        </WrapPanel>
+      </Grid>
+
+      <!-- ===================== Panneau ===================== -->
+      <TextBlock Style="{StaticResource Section}" Text="Bulle de Nomi"/>
+      <TextBlock Style="{StaticResource Note}" Text="La bulle reste affichée en aperçu tant que cette fenêtre est ouverte : déplacez-la par son en-tête, redimensionnez-la par son coin."/>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Thème"/>
+        <WrapPanel Grid.Column="1">
+          <RadioButton Style="{StaticResource Chip}" GroupName="theme" Tag="PanelTheme=dark" Content="Sombre"/>
+          <RadioButton Style="{StaticResource Chip}" GroupName="theme" Tag="PanelTheme=light" Content="Clair"/>
+        </WrapPanel>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Couleur d'accent" VerticalAlignment="Top" Margin="0,6,16,0"/>
+        <WrapPanel Grid.Column="1" Tag="colors:Accent"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Couleur de fond" VerticalAlignment="Top" Margin="0,6,16,0"/>
+        <WrapPanel Grid.Column="1" Tag="colors:PanelBackground"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Opacité du fond"/>
+        <Slider Grid.Column="1" Tag="PanelOpacity" Minimum="0.4" Maximum="1" SmallChange="0.02" LargeChange="0.1"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:PanelOpacity"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Largeur"/>
+        <Slider Grid.Column="1" Tag="PanelWidth" Minimum="300" Maximum="900" SmallChange="10" LargeChange="50"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:PanelWidth"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Hauteur"/>
+        <Slider Grid.Column="1" Tag="PanelHeight" Minimum="320" Maximum="1000" SmallChange="10" LargeChange="50"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:PanelHeight"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Taille du texte"/>
+        <Slider Grid.Column="1" Tag="FontSize" Minimum="11" Maximum="18" SmallChange="0.5" LargeChange="1" IsSnapToTickEnabled="True" TickFrequency="0.5"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:FontSize"/>
+      </Grid>
+      <CheckBox Tag="Rounded" Content="Coins arrondis"/>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Emplacement"/>
+        <WrapPanel Grid.Column="1">
+          <RadioButton Style="{StaticResource Chip}" GroupName="placement" Tag="PanelPlacement=mascot" Content="À côté de Nomi"/>
+          <RadioButton Style="{StaticResource Chip}" GroupName="placement" Tag="PanelPlacement=free" Content="Position libre"/>
+        </WrapPanel>
+      </Grid>
+
+      <!-- ===================== Réponse assistée ===================== -->
+      <TextBlock Style="{StaticResource Section}" Text="Réponse assistée manuelle"/>
+      <TextBlock Style="{StaticResource Note}" Text="Bouton « Zone de l'écran » ou Ctrl+Alt+R : surlignez à la souris le passage auquel répondre, n'importe où à l'écran."/>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Couleur de surlignage" VerticalAlignment="Top" Margin="0,6,16,0"/>
+        <WrapPanel Grid.Column="1" Tag="colors:HighlightColor"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Intensité"/>
+        <Slider Grid.Column="1" Tag="HighlightOpacity" Minimum="0.1" Maximum="0.8" SmallChange="0.02" LargeChange="0.1"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:HighlightOpacity"/>
+      </Grid>
+      <Border Style="{StaticResource Card}" Margin="200,4,0,0" Padding="14,12">
+        <Grid>
+          <Border x:Name="HighlightSample" CornerRadius="3" BorderThickness="2" HorizontalAlignment="Left" Margin="-4,-3"/>
+          <TextBlock Style="{StaticResource Text}" Text="Pouvez-vous me confirmer votre disponibilité jeudi ?"/>
+        </Grid>
+      </Border>
+
+      <!-- ===================== Outlook ===================== -->
+      <TextBlock Style="{StaticResource Section}" Text="Outlook"/>
+      <TextBlock Style="{StaticResource Note}" Text="Outlook classique (2016 à Microsoft 365). Nomi ne fait que proposer : aucun mail n'est envoyé sans vous."/>
+      <CheckBox Tag="OutlookSuggestions" Content="Suggérer une réponse aux derniers mails reçus"/>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Nombre de mails"/>
+        <Slider Grid.Column="1" Tag="SuggestionCount" Minimum="1" Maximum="10" SmallChange="1" LargeChange="1" IsSnapToTickEnabled="True" TickFrequency="1"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:SuggestionCount"/>
+      </Grid>
+      <CheckBox Tag="SuggestionsUnreadOnly" Content="Seulement les mails non lus"/>
+      <CheckBox Tag="AutoDrafts" Content="Enregistrer aussi chaque suggestion dans les Brouillons d'Outlook"/>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Signer avec"/>
+        <TextBox Grid.Column="1" Style="{StaticResource Input}" Tag="SignatureName" TextWrapping="NoWrap"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Langue des réponses"/>
+        <WrapPanel Grid.Column="1">
+          <RadioButton Style="{StaticResource Chip}" GroupName="lang" Tag="ReplyLanguage=auto" Content="Celle du mail"/>
+          <RadioButton Style="{StaticResource Chip}" GroupName="lang" Tag="ReplyLanguage=fr" Content="Français"/>
+          <RadioButton Style="{StaticResource Chip}" GroupName="lang" Tag="ReplyLanguage=en" Content="Anglais"/>
+        </WrapPanel>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Ton par défaut"/>
+        <WrapPanel Grid.Column="1">
+          <RadioButton Style="{StaticResource Chip}" GroupName="tone" Tag="DefaultTone=neutre" Content="Neutre"/>
+          <RadioButton Style="{StaticResource Chip}" GroupName="tone" Tag="DefaultTone=formel" Content="Formel"/>
+          <RadioButton Style="{StaticResource Chip}" GroupName="tone" Tag="DefaultTone=chaleureux" Content="Chaleureux"/>
+          <RadioButton Style="{StaticResource Chip}" GroupName="tone" Tag="DefaultTone=bref" Content="Bref"/>
+        </WrapPanel>
+      </Grid>
+
+      <!-- ===================== Modèle ===================== -->
+      <TextBlock Style="{StaticResource Section}" Text="Modèle local"/>
+      <TextBlock x:Name="EngineStatus" Style="{StaticResource Note}"/>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Fichier du modèle"/>
+        <TextBox Grid.Column="1" x:Name="ModelPathBox" Style="{StaticResource Input}" IsReadOnly="True" TextWrapping="NoWrap"/>
+        <Button Grid.Column="2" x:Name="BrowseModel" Style="{StaticResource Btn}" Content="Parcourir…" Margin="8,0,0,0"/>
+        <Button Grid.Column="3" x:Name="DefaultModel" Style="{StaticResource Ghost}" Content="Par défaut" Margin="4,0,0,0"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Longueur maximale"/>
+        <Slider Grid.Column="1" Tag="MaxTokens" Minimum="100" Maximum="1500" SmallChange="50" LargeChange="100" IsSnapToTickEnabled="True" TickFrequency="25"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:MaxTokens"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Créativité"/>
+        <Slider Grid.Column="1" Tag="Temperature" Minimum="0" Maximum="1" SmallChange="0.05" LargeChange="0.1" IsSnapToTickEnabled="True" TickFrequency="0.05"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:Temperature"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Cœurs utilisés"/>
+        <Slider Grid.Column="1" Tag="Threads" Minimum="0" Maximum="16" SmallChange="1" LargeChange="2" IsSnapToTickEnabled="True" TickFrequency="1"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:Threads"/>
+      </Grid>
+      <Grid Style="{StaticResource Row}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource RowLabel}" Text="Libérer la mémoire après"/>
+        <Slider Grid.Column="1" Tag="UnloadAfterMinutes" Minimum="0" Maximum="120" SmallChange="5" LargeChange="10" IsSnapToTickEnabled="True" TickFrequency="5"/>
+        <TextBlock Grid.Column="2" Style="{StaticResource Value}" Tag="value:UnloadAfterMinutes"/>
+      </Grid>
+      <CheckBox Tag="PreloadModel" Content="Charger le modèle dès le démarrage (réponses plus rapides)"/>
+
+      <!-- ===================== Général ===================== -->
+      <TextBlock Style="{StaticResource Section}" Text="Général"/>
+      <CheckBox Tag="LaunchAtStartup" Content="Lancer Nomi au démarrage de Windows"/>
+      <CheckBox Tag="Hotkeys" Content="Raccourcis clavier : Ctrl+Alt+N (bulle), Ctrl+Alt+R (zone de l'écran)"/>
+      <WrapPanel Margin="0,10,0,0">
+        <Button x:Name="OpenLogs" Style="{StaticResource Btn}" Content="Ouvrir le dossier des journaux" Margin="0,0,8,0"/>
+        <Button x:Name="ResetAll" Style="{StaticResource Ghost}" Content="Rétablir les réglages par défaut"/>
+      </WrapPanel>
+      <TextBlock x:Name="VersionText" Style="{StaticResource Muted}" Margin="0,18,0,0"/>
+    </StackPanel>
+  </ScrollViewer>
+
+  <!-- Footer -->
+  <Border Grid.Row="1" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="32,14">
+    <Grid>
+      <TextBlock x:Name="DirtyText" Style="{StaticResource Muted}" VerticalAlignment="Center"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button x:Name="CancelButton" Style="{StaticResource Btn}" Content="Annuler" Margin="0,0,8,0" IsCancel="True"/>
+        <Button x:Name="SaveButton" Style="{StaticResource Primary}" Content="Enregistrer" IsDefault="True"/>
+      </StackPanel>
+    </Grid>
+  </Border>
+</Grid>

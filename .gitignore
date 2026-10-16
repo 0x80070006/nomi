@@ -1,0 +1,4 @@
+obj/
+dist/
+vendor/
+*.log
